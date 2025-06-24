@@ -1,34 +1,30 @@
 from uuid import uuid4
 
-from aiogram.enums import ParseMode
-from aiogram.exceptions import TelegramBadRequest
-from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+from aiogram.types import InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 
-from aiogram import Router, F, Bot
-from keyboards.user_kb import custom_password_kb
-from services.FSMState import messages
+from aiogram import Router, Bot
+from services.password_gen import xkcd
 
 user_inline = Router()
 
 
 # todo try to do smth interesting with this
 @user_inline.inline_query()
-async def inline_echo_handler(inline_query: InlineQuery, bot: Bot):
-    user_input = inline_query.query or "Пусто"
+async def inline_generate_normal(inline_query: InlineQuery, bot: Bot):
+    pwd = xkcd.normal()
 
     result = InlineQueryResultArticle(
         id=str(uuid4()),
-        title=f"Эхо: {user_input}",
-        description="Нажми, чтобы отправить этот текст",
+        title="Сгенерировать обычный пароль",
+        description="Генерация нормального пароля через inline",
         input_message_content=InputTextMessageContent(
-            message_text=f"🔁 Ты написал: <b>{user_input}</b>",
-            parse_mode="HTML"
+            message_text=f"`{pwd}`",
+            parse_mode="MarkdownV2"
         )
     )
 
     await bot.answer_inline_query(
         inline_query.id,
         results=[result],
-        cache_time=1  # 1 секунда — без кэша
+        cache_time=0
     )
