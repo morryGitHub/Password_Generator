@@ -8,6 +8,7 @@ from aiogram import Dispatcher, Bot
 from handlers.last_command import process_last_pending_update
 from handlers.user_message import user_message
 from handlers.user_callback import user_callback
+from handlers.user_inline_query import user_inline
 from keyboards.botCommands import set_bot_commands
 
 
@@ -18,6 +19,7 @@ async def main():
     await set_bot_commands(bot)
 
     dp = Dispatcher()
+    dp.include_router(user_inline)
     dp.include_router(user_callback)
     dp.include_router(user_message)
 
